@@ -49,8 +49,10 @@ namespace Gsb_Frais
             txt_Date.CustomFormat = "dd/MM/yyyy";
         }
 
+        //Bouton Valider de connexion
         private void bt_Valider_Click(object sender, EventArgs e)
         {
+            //Recherche du login, mdp, nom, prenom et id du visiteur
             con.Open();
             string user = "select login, mdp, nom, prenom, id from visiteur where login='" + txt_login.Text + "' and mdp='" + txt_mdp.Text + "' ";
             cmd = new SqlCommand(user, con);
@@ -74,6 +76,7 @@ namespace Gsb_Frais
                     cxn = true;
                     if (cxn == true)
                     {
+                        //Affichage ou non des ongles
                         tabControl1.TabPages.Remove(tabPage1);
                         tabControl1.TabPages.Add(tabPage2);
                         tabControl1.TabPages.Add(tabPage3);
@@ -95,14 +98,18 @@ namespace Gsb_Frais
             this.list_mois(idVisiteur);
         }
 
+        //Bouton Annuler de connexion
         private void bt_Annuler_Click(object sender, EventArgs e)
         {
+            //Fermeture de la connexion et mise a jour des ongles
             con.Close();
             cxn = false;
         }
 
+        //Bouton Déconnexion
         private void bt_Deconnexion_Click(object sender, EventArgs e)
         {
+            //Fermeture de la base et mise a jour des ongles
             con.Close();
             cxn = false;
             tabControl1.TabPages.Add(tabPage1);
@@ -111,11 +118,14 @@ namespace Gsb_Frais
             tabControl1.TabPages.Remove(tabPage4);
         }
 
+        //Bouton Annulation Déconnexion
         private void bt_Annuler_Deco_Click(object sender, EventArgs e)
         {
+            //Passage a l'onglet suivant
             tabControl1.SelectedIndex = tabControl1.SelectedIndex + 1;
         }
 
+        //Bouton valider des Elements Forfaitisés
         private void bt_Valider_ElementsForfaitises_Click(object sender, EventArgs e)
         {
             string InsertEtape = txt_InsertEtape.Text;
@@ -133,15 +143,18 @@ namespace Gsb_Frais
                 float.Parse(InsertNuit);
                 float.Parse(InsertRepas);
                 resultParse = true;
-                
+
             }
+            //Sinon affichage d'un message d'erreur
             catch
             {
                 MessageBox.Show("Merci d'enregistrer des valeurs valide.");
             }
 
+            //Si les champs correspondent au format attendu
             if (resultParse == true)
             {
+                // Recuperation de l'id, du libelle et mondant des fraisforfait
                 con.Open();
                 string FraisForfait = "select id ,libelle ,montant from fraisforfait";
                 cmd = new SqlCommand(FraisForfait, con);
@@ -149,6 +162,7 @@ namespace Gsb_Frais
                 dr = cmd.ExecuteReader();
                 try
                 {
+                    //Boucle
                     while (dr.Read())
                     {
                         string idFraisForfait = Convert.ToString(dr.GetValue(0));
@@ -172,6 +186,7 @@ namespace Gsb_Frais
                             Quantite = InsertRepas;
                         }
 
+                        //Insertion des frais forfait
                         con2.Open();
                         string insertFrais = "INSERT INTO lignefraisforfait (idVisiteur, mois, idFraisForfait, quantite) VALUES('" + idVisiteur.Trim() + "', '" + Year + Month + "', '" + idFraisForfait.Trim() + "', '" + Quantite + "')";
                         SqlCommand cmd2 = new SqlCommand(insertFrais, con2);
@@ -245,8 +260,8 @@ namespace Gsb_Frais
 
             if (Libelle != "" && Montant != "" && resultParse == true)
             {
-            dataGridView_HorsForfait.Visible = true;
-            label_HorsForfait.Visible = true;
+                dataGridView_HorsForfait.Visible = true;
+                label_HorsForfait.Visible = true;
             }
 
             con3.Open();
@@ -304,15 +319,67 @@ namespace Gsb_Frais
             da.Fill(dt);
             dataGridView_ElementHorsForfait.DataSource = dt;
             con.Close();
+            
+            //Affichage du tableau de frais
+            SqlConnection conETP = new SqlConnection("Server=localhost;database=gsb_frais;trusted_connection= sspi");
+            conETP.Open();
+            string requeteETP = "select top 1 quantite as ETP from lignefraisforfait Where lignefraisforfait.idvisiteur ='" + idVisiteur.Trim() + "' and lignefraisforfait.mois='" + label_Mois.Text + "' and lignefraisforfait.idfraisforfait = 'ETP' ";
+            cmd = new SqlCommand(requeteETP, conETP);
+            cmd.ExecuteNonQuery();
+            dr = cmd.ExecuteReader();
+            dr.Read();
+            string ETP = Convert.ToString(dr.GetValue(0));
+            dr.Close();
 
-            con2.Open();
-            string selectFraisforfait = "select fraisforfait.id as idfrais, fraisforfait.libelle as libelle, lignefraisforfait.quantite as quantite from lignefraisforfait inner join fraisforfait on fraisforfait.id = lignefraisforfait.idfraisforfait where lignefraisforfait.idvisiteur ='" + idVisiteur.Trim() + "' and lignefraisforfait.mois='" + label_Mois.Text + "' order by lignefraisforfait.idfraisforfait";
-            da = new SqlDataAdapter(selectFraisforfait, con2);
-            dt = new DataTable();
-            da.Fill(dt);
-            dataGridView_ElementForfait.DataSource = dt;
-            con2.Close();
+            SqlConnection conKM = new SqlConnection("Server=localhost;database=gsb_frais;trusted_connection= sspi");
+            conKM.Open();
+            string requeteKM = "select top 1 quantite as KM from lignefraisforfait Where lignefraisforfait.idvisiteur ='" + idVisiteur.Trim() + "' and lignefraisforfait.mois='" + label_Mois.Text + "' and lignefraisforfait.idfraisforfait = 'KM' ";
+            cmd = new SqlCommand(requeteKM, conKM);
+            cmd.ExecuteNonQuery();
+            dr = cmd.ExecuteReader();
+            dr.Read();
+            string KM = Convert.ToString(dr.GetValue(0));
+            dr.Close();
 
+            SqlConnection conNUI = new SqlConnection("Server=localhost;database=gsb_frais;trusted_connection= sspi");
+            conNUI.Open();
+            string requeteNUI = "select top 1 quantite as NUI from lignefraisforfait Where lignefraisforfait.idvisiteur ='" + idVisiteur.Trim() + "' and lignefraisforfait.mois='" + label_Mois.Text + "' and lignefraisforfait.idfraisforfait = 'NUI' ";
+            cmd = new SqlCommand(requeteNUI, conNUI);
+            cmd.ExecuteNonQuery();
+            dr = cmd.ExecuteReader();
+            dr.Read();
+            string NUI = Convert.ToString(dr.GetValue(0));
+            dr.Close();
+
+            SqlConnection conREP = new SqlConnection("Server=localhost;database=gsb_frais;trusted_connection= sspi");
+            conREP.Open();
+            string requeteREP = "select top 1 quantite as REP from lignefraisforfait Where lignefraisforfait.idvisiteur ='" + idVisiteur.Trim() + "' and lignefraisforfait.mois='" + label_Mois.Text + "' and lignefraisforfait.idfraisforfait = 'REP' ";
+            cmd = new SqlCommand(requeteREP, conREP);
+            cmd.ExecuteNonQuery();
+            dr = cmd.ExecuteReader();
+            dr.Read();
+            string REP = Convert.ToString(dr.GetValue(0));
+            dr.Close();
+
+            dataGridView_ElementForfait.ColumnCount = 4;
+            dataGridView_ElementForfait.ColumnHeadersVisible = true;
+
+            DataGridViewCellStyle columnHeaderStyle = new DataGridViewCellStyle();
+
+            dataGridView_ElementForfait.Columns[0].Name = "Forfait Etape";
+            dataGridView_ElementForfait.Columns[1].Name = "Frais Kilométrique";
+            dataGridView_ElementForfait.Columns[2].Name = "Nuitée Hôtel";
+            dataGridView_ElementForfait.Columns[3].Name = "Repas Restaurant";
+
+            string[] row1 = new string[] { ETP, KM, NUI, REP };
+
+            //Ajout de la ligne dans le tableau
+            dataGridView_ElementForfait.Rows.Add(row1);
+
+            conETP.Close();
+            conKM.Close();
+            conNUI.Close();
+            conREP.Close();
 
             // Remplissage des champs mais d'abord les enregister en base
             //con3.Open();
@@ -343,11 +410,6 @@ namespace Gsb_Frais
 
         }
 
-        private void dataGridView_ElementForfait_CellContentClick(object sender, DataGridViewCellEventArgs e)
-        {
-            
-        }
-
         private void dataGridView_HorsForfait_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
             System.Text.StringBuilder messageBoxCS = new System.Text.StringBuilder();
@@ -357,7 +419,6 @@ namespace Gsb_Frais
             messageBoxCS.AppendLine();
             MessageBox.Show(messageBoxCS.ToString(), "CellContentDoubleClick Event");
         }
-
 
     }
 }
