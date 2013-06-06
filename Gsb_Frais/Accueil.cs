@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Data.SqlClient;
+using System.Configuration;
 
 namespace Gsb_Frais
 {
@@ -22,15 +23,17 @@ namespace Gsb_Frais
         SqlDataReader dr;
         SqlDataAdapter da;
         DataTable dt;
-        DataTable dtSelectFraishorsforfait;
         string idVisiteur;
         string Year;
         string Month;
+
+        //ConnectionStringSettings chaineConnexion = ConfigurationManager.ConnectionStrings["Connexionbdd"];
 
 
         public Accueil()
         {
             InitializeComponent();
+           
             AcceptButton = bt_Valider;
             FolderBrowserDialog FolderBrowserDialog1 = new FolderBrowserDialog();
 
@@ -387,6 +390,7 @@ namespace Gsb_Frais
                         list_DateFiche.Items.Add(date);
                 }
                 con.Close();
+                list_DateFiche.Items.Add(Year + Month);
             }
             catch
             {
@@ -505,25 +509,36 @@ namespace Gsb_Frais
                 conREP.Close();
             }
 
-            // Remplissage des champs mais d'abord les enregister en base
             con3.Open();
-            string fichefrais = "select fichefrais.nbJustificatifs, fichefrais.montantValide, fichefrais.dateModif, etat.libelle from fichefrais, etat Where fichefrais.idEtat = etat.id and fichefrais.idvisiteur ='" + idVisiteur.Trim() + "' AND mois = '" + Year + Month + "'";
-            cmd = new SqlCommand(fichefrais, con3);
+            string FicheFrais = "select COUNT(*) as nbFicheFrais from fichefrais Where fichefrais.idvisiteur ='" + idVisiteur.Trim() + "' AND mois = '" + Year + Month + "'";
+            cmd = new SqlCommand(FicheFrais, con3);
             cmd.ExecuteNonQuery();
             dr = cmd.ExecuteReader();
             dr.Read();
+            string nbFicheFrais = Convert.ToString(dr.GetValue(0));
 
-            string nbJustificatifs = Convert.ToString(dr.GetValue(0));
-            string montantValide = Convert.ToString(dr.GetValue(1));
-            string dateModif = Convert.ToString(dr.GetValue(2));
-            string libelle = Convert.ToString(dr.GetValue(3));
+            if (nbFicheFrais != "0")
+            {
+                // Remplissage des champs mais d'abord les enregister en base
+                con3.Open();
+                string fichefrais = "select COUNT(*) as nbFicheFrais, fichefrais.nbJustificatifs, fichefrais.montantValide, fichefrais.dateModif, etat.libelle from fichefrais, etat Where fichefrais.idEtat = etat.id and fichefrais.idvisiteur ='" + idVisiteur.Trim() + "' AND mois = '" + Year + Month + "'";
+                cmd = new SqlCommand(fichefrais, con3);
+                cmd.ExecuteNonQuery();
+                dr = cmd.ExecuteReader();
+                dr.Read();
 
-            label_libEtat.Text = libelle;
-            label_montantValide.Text = montantValide;
-            label_nbjustificatifs.Text = nbJustificatifs;
-            label_DateModif.Text = dateModif;
+                string nbJustificatifs = Convert.ToString(dr.GetValue(0));
+                string montantValide = Convert.ToString(dr.GetValue(1));
+                string dateModif = Convert.ToString(dr.GetValue(2));
+                string libelle = Convert.ToString(dr.GetValue(3));
 
-            con3.Close();
+                label_libEtat.Text = libelle;
+                label_montantValide.Text = montantValide;
+                label_nbjustificatifs.Text = nbJustificatifs;
+                label_DateModif.Text = dateModif;
+
+                con3.Close();
+            }
 
         }
 
