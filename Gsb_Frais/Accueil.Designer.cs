@@ -54,17 +54,6 @@
             this.label_date = new System.Windows.Forms.Label();
             this.label7 = new System.Windows.Forms.Label();
             this.dataGridView_HorsForfait = new System.Windows.Forms.DataGridView();
-            this.id = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Date = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Libellé = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Montant = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Bouton = new System.Windows.Forms.DataGridViewLinkColumn();
-            this.idDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.idVisiteurDataGridViewTextBoxColumn1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.moisDataGridViewTextBoxColumn1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.libelleDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.dateDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.montantDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.lignefraishorsforfaitBindingSource = new System.Windows.Forms.BindingSource(this.components);
             this.gsb_fraisDataSet1 = new Gsb_Frais.gsb_fraisDataSet1();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
@@ -89,6 +78,7 @@
             this.label11 = new System.Windows.Forms.Label();
             this.tabPage4 = new System.Windows.Forms.TabPage();
             this.gb_FicheFrais = new System.Windows.Forms.GroupBox();
+            this.label4 = new System.Windows.Forms.Label();
             this.label29 = new System.Windows.Forms.Label();
             this.dataGridView_ElementHorsForfait = new System.Windows.Forms.DataGridView();
             this.dataGridViewTextBoxColumn1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -96,7 +86,6 @@
             this.dataGridViewTextBoxColumn3 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.label28 = new System.Windows.Forms.Label();
             this.dataGridView_ElementForfait = new System.Windows.Forms.DataGridView();
-            this.lignefraisforfaitBindingSource = new System.Windows.Forms.BindingSource(this.components);
             this.label13 = new System.Windows.Forms.Label();
             this.label_nbjustificatifs = new System.Windows.Forms.Label();
             this.label_montantValide = new System.Windows.Forms.Label();
@@ -113,9 +102,15 @@
             this.bt_Valider_Mois = new System.Windows.Forms.Button();
             this.bt_Effacer_Mois = new System.Windows.Forms.Button();
             this.label17 = new System.Windows.Forms.Label();
+            this.lignefraisforfaitBindingSource = new System.Windows.Forms.BindingSource(this.components);
             this.gsb_fraisDataSet = new Gsb_Frais.gsb_fraisDataSet();
             this.gsbfraisDataSetBindingSource = new System.Windows.Forms.BindingSource(this.components);
             this.lignefraishorsforfaitTableAdapter = new Gsb_Frais.gsb_fraisDataSet1TableAdapters.lignefraishorsforfaitTableAdapter();
+            this.id = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Date = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Libellé = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Montant = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Bouton = new System.Windows.Forms.DataGridViewLinkColumn();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
@@ -133,8 +128,8 @@
             this.gb_FicheFrais.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView_ElementHorsForfait)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView_ElementForfait)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.lignefraisforfaitBindingSource)).BeginInit();
             this.groupBox6.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.lignefraisforfaitBindingSource)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.gsb_fraisDataSet)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.gsbfraisDataSetBindingSource)).BeginInit();
             this.SuspendLayout();
@@ -408,13 +403,7 @@
             this.Date,
             this.Libellé,
             this.Montant,
-            this.Bouton,
-            this.idDataGridViewTextBoxColumn,
-            this.idVisiteurDataGridViewTextBoxColumn1,
-            this.moisDataGridViewTextBoxColumn1,
-            this.libelleDataGridViewTextBoxColumn,
-            this.dateDataGridViewTextBoxColumn,
-            this.montantDataGridViewTextBoxColumn});
+            this.Bouton});
             this.dataGridView_HorsForfait.DataSource = this.lignefraishorsforfaitBindingSource;
             this.dataGridView_HorsForfait.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.dataGridView_HorsForfait.GridColor = System.Drawing.SystemColors.ActiveBorder;
@@ -426,87 +415,6 @@
             this.dataGridView_HorsForfait.Size = new System.Drawing.Size(976, 195);
             this.dataGridView_HorsForfait.TabIndex = 3;
             this.dataGridView_HorsForfait.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView_HorsForfait_CellContentClick);
-            // 
-            // id
-            // 
-            this.id.DataPropertyName = "id";
-            this.id.HeaderText = "id";
-            this.id.Name = "id";
-            this.id.ReadOnly = true;
-            this.id.Visible = false;
-            // 
-            // Date
-            // 
-            this.Date.DataPropertyName = "date";
-            this.Date.HeaderText = "Date";
-            this.Date.Name = "Date";
-            this.Date.ReadOnly = true;
-            // 
-            // Libellé
-            // 
-            this.Libellé.DataPropertyName = "libelle";
-            this.Libellé.HeaderText = "Libellé";
-            this.Libellé.Name = "Libellé";
-            this.Libellé.ReadOnly = true;
-            // 
-            // Montant
-            // 
-            this.Montant.DataPropertyName = "montant";
-            this.Montant.HeaderText = "Montant";
-            this.Montant.Name = "Montant";
-            this.Montant.ReadOnly = true;
-            // 
-            // Bouton
-            // 
-            this.Bouton.HeaderText = "";
-            this.Bouton.Name = "Bouton";
-            this.Bouton.ReadOnly = true;
-            this.Bouton.Resizable = System.Windows.Forms.DataGridViewTriState.True;
-            this.Bouton.Text = "Supprimer ce frais";
-            this.Bouton.ToolTipText = "Supprimer ce frais";
-            this.Bouton.UseColumnTextForLinkValue = true;
-            // 
-            // idDataGridViewTextBoxColumn
-            // 
-            this.idDataGridViewTextBoxColumn.DataPropertyName = "id";
-            this.idDataGridViewTextBoxColumn.HeaderText = "id";
-            this.idDataGridViewTextBoxColumn.Name = "idDataGridViewTextBoxColumn";
-            this.idDataGridViewTextBoxColumn.ReadOnly = true;
-            // 
-            // idVisiteurDataGridViewTextBoxColumn1
-            // 
-            this.idVisiteurDataGridViewTextBoxColumn1.DataPropertyName = "idVisiteur";
-            this.idVisiteurDataGridViewTextBoxColumn1.HeaderText = "idVisiteur";
-            this.idVisiteurDataGridViewTextBoxColumn1.Name = "idVisiteurDataGridViewTextBoxColumn1";
-            this.idVisiteurDataGridViewTextBoxColumn1.ReadOnly = true;
-            // 
-            // moisDataGridViewTextBoxColumn1
-            // 
-            this.moisDataGridViewTextBoxColumn1.DataPropertyName = "mois";
-            this.moisDataGridViewTextBoxColumn1.HeaderText = "mois";
-            this.moisDataGridViewTextBoxColumn1.Name = "moisDataGridViewTextBoxColumn1";
-            this.moisDataGridViewTextBoxColumn1.ReadOnly = true;
-            // 
-            // libelleDataGridViewTextBoxColumn
-            // 
-            this.libelleDataGridViewTextBoxColumn.DataPropertyName = "libelle";
-            this.libelleDataGridViewTextBoxColumn.HeaderText = "libelle";
-            this.libelleDataGridViewTextBoxColumn.Name = "libelleDataGridViewTextBoxColumn";
-            this.libelleDataGridViewTextBoxColumn.ReadOnly = true;
-            // 
-            // dateDataGridViewTextBoxColumn
-            // 
-            this.dateDataGridViewTextBoxColumn.DataPropertyName = "date";
-            this.dateDataGridViewTextBoxColumn.HeaderText = "date";
-            this.dateDataGridViewTextBoxColumn.Name = "dateDataGridViewTextBoxColumn";
-            this.dateDataGridViewTextBoxColumn.ReadOnly = true;
-            // 
-            // montantDataGridViewTextBoxColumn
-            // 
-            this.montantDataGridViewTextBoxColumn.DataPropertyName = "montant";
-            this.montantDataGridViewTextBoxColumn.HeaderText = "montant";
-            this.montantDataGridViewTextBoxColumn.Name = "montantDataGridViewTextBoxColumn";
-            this.montantDataGridViewTextBoxColumn.ReadOnly = true;
             // 
             // lignefraishorsforfaitBindingSource
             // 
@@ -749,6 +657,7 @@
             // 
             // gb_FicheFrais
             // 
+            this.gb_FicheFrais.Controls.Add(this.label4);
             this.gb_FicheFrais.Controls.Add(this.label29);
             this.gb_FicheFrais.Controls.Add(this.dataGridView_ElementHorsForfait);
             this.gb_FicheFrais.Controls.Add(this.label28);
@@ -768,6 +677,16 @@
             this.gb_FicheFrais.Size = new System.Drawing.Size(979, 451);
             this.gb_FicheFrais.TabIndex = 8;
             this.gb_FicheFrais.TabStop = false;
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.ImeMode = System.Windows.Forms.ImeMode.NoControl;
+            this.label4.Location = new System.Drawing.Point(181, 39);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(49, 13);
+            this.label4.TabIndex = 22;
+            this.label4.Text = "depuis le";
             // 
             // label29
             // 
@@ -840,19 +759,13 @@
             this.dataGridView_ElementForfait.ReadOnly = true;
             this.dataGridView_ElementForfait.ScrollBars = System.Windows.Forms.ScrollBars.None;
             this.dataGridView_ElementForfait.Size = new System.Drawing.Size(976, 48);
-            //this.dataGridView_ElementForfait.TabIndex = 4;
-            //this.dataGridView_ElementForfait.Tag = "ETP";
-            // 
-            // lignefraisforfaitBindingSource
-            // 
-            this.lignefraisforfaitBindingSource.DataMember = "lignefraisforfait";
-            this.lignefraisforfaitBindingSource.DataSource = typeof(Gsb_Frais.gsb_fraisDataSet);
+            this.dataGridView_ElementForfait.TabIndex = 21;
             // 
             // label13
             // 
             this.label13.AutoSize = true;
             this.label13.ImeMode = System.Windows.Forms.ImeMode.NoControl;
-            this.label13.Location = new System.Drawing.Point(46, 169);
+            this.label13.Location = new System.Drawing.Point(40, 169);
             this.label13.Name = "label13";
             this.label13.Size = new System.Drawing.Size(87, 13);
             this.label13.TabIndex = 18;
@@ -892,7 +805,7 @@
             // 
             this.label_libEtat.AutoSize = true;
             this.label_libEtat.ImeMode = System.Windows.Forms.ImeMode.NoControl;
-            this.label_libEtat.Location = new System.Drawing.Point(39, 39);
+            this.label_libEtat.Location = new System.Drawing.Point(38, 39);
             this.label_libEtat.Name = "label_libEtat";
             this.label_libEtat.Size = new System.Drawing.Size(56, 13);
             this.label_libEtat.TabIndex = 12;
@@ -902,7 +815,7 @@
             // 
             this.label_DateModif.AutoSize = true;
             this.label_DateModif.ImeMode = System.Windows.Forms.ImeMode.NoControl;
-            this.label_DateModif.Location = new System.Drawing.Point(105, 39);
+            this.label_DateModif.Location = new System.Drawing.Point(232, 39);
             this.label_DateModif.Name = "label_DateModif";
             this.label_DateModif.Size = new System.Drawing.Size(36, 13);
             this.label_DateModif.TabIndex = 11;
@@ -1012,6 +925,11 @@
             this.label17.TabIndex = 1;
             this.label17.Text = "Mois :";
             // 
+            // lignefraisforfaitBindingSource
+            // 
+            this.lignefraisforfaitBindingSource.DataMember = "lignefraisforfait";
+            this.lignefraisforfaitBindingSource.DataSource = typeof(Gsb_Frais.gsb_fraisDataSet);
+            // 
             // gsb_fraisDataSet
             // 
             this.gsb_fraisDataSet.DataSetName = "gsb_fraisDataSet";
@@ -1026,6 +944,45 @@
             // 
             this.lignefraishorsforfaitTableAdapter.ClearBeforeFill = true;
             // 
+            // id
+            // 
+            this.id.DataPropertyName = "id";
+            this.id.HeaderText = "id";
+            this.id.Name = "id";
+            this.id.ReadOnly = true;
+            this.id.Visible = false;
+            // 
+            // Date
+            // 
+            this.Date.DataPropertyName = "date";
+            this.Date.HeaderText = "Date";
+            this.Date.Name = "Date";
+            this.Date.ReadOnly = true;
+            // 
+            // Libellé
+            // 
+            this.Libellé.DataPropertyName = "libelle";
+            this.Libellé.HeaderText = "Libellé";
+            this.Libellé.Name = "Libellé";
+            this.Libellé.ReadOnly = true;
+            // 
+            // Montant
+            // 
+            this.Montant.DataPropertyName = "montant";
+            this.Montant.HeaderText = "Montant";
+            this.Montant.Name = "Montant";
+            this.Montant.ReadOnly = true;
+            // 
+            // Bouton
+            // 
+            this.Bouton.HeaderText = "";
+            this.Bouton.Name = "Bouton";
+            this.Bouton.ReadOnly = true;
+            this.Bouton.Resizable = System.Windows.Forms.DataGridViewTriState.True;
+            this.Bouton.Text = "Supprimer ce frais";
+            this.Bouton.ToolTipText = "Supprimer ce frais";
+            this.Bouton.UseColumnTextForLinkValue = true;
+            // 
             // Accueil
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1036,7 +993,6 @@
             this.Name = "Accueil";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Suivi du remboursement des frais";
-            this.Load += new System.EventHandler(this.Accueil_Load);
             this.tabControl1.ResumeLayout(false);
             this.tabPage1.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
@@ -1061,9 +1017,9 @@
             this.gb_FicheFrais.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView_ElementHorsForfait)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView_ElementForfait)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.lignefraisforfaitBindingSource)).EndInit();
             this.groupBox6.ResumeLayout(false);
             this.groupBox6.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.lignefraisforfaitBindingSource)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.gsb_fraisDataSet)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.gsbfraisDataSetBindingSource)).EndInit();
             this.ResumeLayout(false);
@@ -1147,17 +1103,12 @@
         private gsb_fraisDataSet1 gsb_fraisDataSet1;
         private System.Windows.Forms.BindingSource lignefraishorsforfaitBindingSource;
         private gsb_fraisDataSet1TableAdapters.lignefraishorsforfaitTableAdapter lignefraishorsforfaitTableAdapter;
+        private System.Windows.Forms.Label label4;
         private System.Windows.Forms.DataGridViewTextBoxColumn id;
         private System.Windows.Forms.DataGridViewTextBoxColumn Date;
         private System.Windows.Forms.DataGridViewTextBoxColumn Libellé;
         private System.Windows.Forms.DataGridViewTextBoxColumn Montant;
         private System.Windows.Forms.DataGridViewLinkColumn Bouton;
-        private System.Windows.Forms.DataGridViewTextBoxColumn idDataGridViewTextBoxColumn;
-        private System.Windows.Forms.DataGridViewTextBoxColumn idVisiteurDataGridViewTextBoxColumn1;
-        private System.Windows.Forms.DataGridViewTextBoxColumn moisDataGridViewTextBoxColumn1;
-        private System.Windows.Forms.DataGridViewTextBoxColumn libelleDataGridViewTextBoxColumn;
-        private System.Windows.Forms.DataGridViewTextBoxColumn dateDataGridViewTextBoxColumn;
-        private System.Windows.Forms.DataGridViewTextBoxColumn montantDataGridViewTextBoxColumn;
 
     }
 }
