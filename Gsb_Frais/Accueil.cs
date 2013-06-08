@@ -14,20 +14,17 @@ namespace Gsb_Frais
 {
     public partial class Accueil : Form
     {
-
         public bool cxn = false;
-        public SqlConnection con = new SqlConnection("Server=localhost;database=gsb_frais;trusted_connection= sspi");
-        public SqlConnection con2 = new SqlConnection("Server=localhost;database=gsb_frais;trusted_connection= sspi");
-        public SqlConnection con3 = new SqlConnection("Server=localhost;database=gsb_frais;trusted_connection= sspi");
-        SqlCommand cmd;
-        SqlDataReader dr;
+        public SqlConnection con = new SqlConnection(ConfigurationManager.ConnectionStrings["Gsb_Frais.Properties.Settings.gsb_fraisConnectionString"].ToString());
+        public SqlConnection con1 = new SqlConnection(ConfigurationManager.ConnectionStrings["Gsb_Frais.Properties.Settings.gsb_fraisConnectionString"].ToString());
+        public SqlConnection con2 = new SqlConnection(ConfigurationManager.ConnectionStrings["Gsb_Frais.Properties.Settings.gsb_fraisConnectionString"].ToString());
         SqlDataAdapter da;
         DataTable dt;
         string idVisiteur;
         string Year;
         string Month;
 
-        //ConnectionStringSettings chaineConnexion = ConfigurationManager.ConnectionStrings["Connexionbdd"];
+
 
 
         public Accueil()
@@ -59,20 +56,19 @@ namespace Gsb_Frais
             //Recherche du login, mdp, nom, prenom et id du visiteur
             con.Open();
             string user = "select login, mdp, nom, prenom, id from visiteur where login='" + txt_login.Text + "' and mdp='" + txt_mdp.Text + "' ";
-            cmd = new SqlCommand(user, con);
-            cmd.ExecuteNonQuery();
-            dr = cmd.ExecuteReader();
+            SqlCommand cmdUser = new SqlCommand(user, con);
+            cmdUser.ExecuteNonQuery();
+            SqlDataReader drUser = cmdUser.ExecuteReader();
 
-            while (dr.Read())
+            while (drUser.Read())
             {
-                string login = Convert.ToString(dr.GetValue(0));
-                string mdp = Convert.ToString(dr.GetValue(1));
-                string nom = Convert.ToString(dr.GetValue(2));
-                string prenom = Convert.ToString(dr.GetValue(3));
-                idVisiteur = Convert.ToString(dr.GetValue(4));
+                string login = Convert.ToString(drUser.GetValue(0));
+                string mdp = Convert.ToString(drUser.GetValue(1));
+                string nom = Convert.ToString(drUser.GetValue(2));
+                string prenom = Convert.ToString(drUser.GetValue(3));
+                idVisiteur = Convert.ToString(drUser.GetValue(4));
 
                 if (txt_login.Text == login.Trim() && txt_mdp.Text == mdp.Trim())
-                //if (txt_login.Text == dr[0].ToString() && txt_mdp.Text == dr[1].ToString())
                 {
                     txt_login.Text = "";
                     txt_mdp.Text = "";
@@ -96,7 +92,8 @@ namespace Gsb_Frais
             {
                 MessageBox.Show("Login ou Mot de passe invalide.");
             }
-            dr.Close();
+            drUser.Close();
+            cmdUser.Dispose();
             con.Close();
             tabControl1.SelectedIndex = tabControl1.SelectedIndex + 1;
             if (cxn == true)
@@ -164,17 +161,18 @@ namespace Gsb_Frais
                 // Recuperation de l'id, du libelle et mondant des fraisforfait
                 con.Open();
                 string FraisForfait = "select id ,libelle ,montant from fraisforfait";
-                cmd = new SqlCommand(FraisForfait, con);
-                cmd.ExecuteNonQuery();
-                dr = cmd.ExecuteReader();
+                SqlCommand cmdFraisForfait = new SqlCommand(FraisForfait, con);
+                cmdFraisForfait.ExecuteNonQuery();
+                SqlDataReader drFraisForfait = cmdFraisForfait.ExecuteReader();
+
                 try
                 {
                     //Boucle
-                    while (dr.Read())
+                    while (drFraisForfait.Read())
                     {
-                        string idFraisForfait = Convert.ToString(dr.GetValue(0));
-                        string libelleFraisForfait = Convert.ToString(dr.GetValue(1));
-                        string montantFraisForfait = Convert.ToString(dr.GetValue(2));
+                        string idFraisForfait = Convert.ToString(drFraisForfait.GetValue(0));
+                        string libelleFraisForfait = Convert.ToString(drFraisForfait.GetValue(1));
+                        string montantFraisForfait = Convert.ToString(drFraisForfait.GetValue(2));
 
                         if (idFraisForfait.Trim() == "ETP")
                         {
@@ -194,54 +192,51 @@ namespace Gsb_Frais
                         }
 
                         //Vérification qu'un enregistrement n'a pas été deja fais par le meme utilisateur pour le meme mois
-                        con3.Open();
+                        con1.Open();
                         string verificationNb = "SELECT COUNT(*) as nb FROM lignefraisforfait WHERE idVisiteur = '" + idVisiteur.Trim() + "' AND mois = '" + Year + Month + "' AND idFraisForfait = '" + idFraisForfait.Trim() + "' ";
-                        cmd = new SqlCommand(verificationNb, con3);
-                        cmd.ExecuteNonQuery();
-                        SqlDataReader dr3 = cmd.ExecuteReader();
-                        dr3.Read();
-                        string nb = Convert.ToString(dr3.GetValue(0));
-                        con3.Close();
-                        dr3.Close();
+                        SqlCommand cmdVerificationNb = new SqlCommand(verificationNb, con1);
+                        cmdVerificationNb.ExecuteNonQuery();
+                        SqlDataReader drVerificationNb = cmdVerificationNb.ExecuteReader();
+                        drVerificationNb.Read();
+                        string nb = Convert.ToString(drVerificationNb.GetValue(0));
+                        cmdVerificationNb.Dispose();
+                        drVerificationNb.Close();
 
                         //Si zero enregistrement pr le meme id et meme mois
                         if (nb != "0")
                         {
                             //Modification des valeurs existantes
-                            con2.Open();
                             string modifFrais = "UPDATE lignefraisforfait SET idVisiteur = '" + idVisiteur.Trim() + "', mois = '" + Year + Month + "',idFraisForfait =  '" + idFraisForfait.Trim() + "', quantite = '" + Quantite + "' WHERE idFraisForfait = '" + idFraisForfait.Trim() + "' ";
-                            cmd = new SqlCommand(modifFrais, con2);
-                            cmd.ExecuteNonQuery();
-                            SqlDataReader dr2 = cmd.ExecuteReader();
-                            dr2.Read();
-                            con2.Close();
-                            dr2.Close();
+                            SqlCommand cmdModifFrais = new SqlCommand(modifFrais, con1);
+                            cmdModifFrais.ExecuteNonQuery();
+                            SqlDataReader drModifFrais = cmdModifFrais.ExecuteReader();
+                            drModifFrais.Read();
+                            cmdModifFrais.Dispose();
+                            drModifFrais.Close();
+                            con1.Close();
                         }
                         else
                         {
                             //Insertion des frais forfait
-                            con2.Open();
                             string insertFrais = "INSERT INTO lignefraisforfait (idVisiteur, mois, idFraisForfait, quantite) VALUES('" + idVisiteur.Trim() + "', '" + Year + Month + "', '" + idFraisForfait.Trim() + "', '" + Quantite + "')";
-                            SqlCommand cmd2 = new SqlCommand(insertFrais, con2);
-                            cmd2.ExecuteNonQuery();
-                            con2.Close();
+                            SqlCommand cmdInsertFrais = new SqlCommand(insertFrais, con1);
+                            cmdInsertFrais.ExecuteNonQuery();
+                            cmdInsertFrais.Dispose();
+                            con1.Close();
                         }
 
                     }
                     con.Close();
-                    con2.Close();
-                    con3.Close();
+                    cmdFraisForfait.Dispose();
                     MessageBox.Show("Enregistrement des éléments forfaitisés effectuer.");
                 }
-                catch
+                catch (SystemException ex)
                 {
-                    MessageBox.Show("Une erreur c'est produite lors de l'enregistrement.");
+                    MessageBox.Show("Une erreur c'est produite lors de l'enregistrement." + ex.Message);
                     con.Close();
-                    con2.Close();
-                    con3.Close();
-                    dr.Close();
+                    cmdFraisForfait.Dispose();
+                    con.Close();
                 }
-
                 this.etat_commande(idVisiteur);
             }
         }
@@ -253,15 +248,15 @@ namespace Gsb_Frais
             try
             {
                 //Vérification qu'un enregistrement n'a pas été deja
-                con3.Open();
+                con.Open();
                 string verificationNbEtat = "SELECT COUNT(*) as nbEtat FROM fichefrais WHERE fichefrais.idVisiteur = '" + idVisiteur.Trim() + "' AND fichefrais.mois = '" + Year + Month + "' ";
-                SqlCommand cmd3 = new SqlCommand(verificationNbEtat, con3);
-                cmd3.ExecuteNonQuery();
-                SqlDataReader dr3 = cmd3.ExecuteReader();
-                dr3.Read();
-                string nbEtat = Convert.ToString(dr3.GetValue(0));
-                con3.Close();
-                dr3.Close();
+                SqlCommand cmdVerificationNbEtat = new SqlCommand(verificationNbEtat, con);
+                cmdVerificationNbEtat.ExecuteNonQuery();
+                SqlDataReader drVerificationNbEtait = cmdVerificationNbEtat.ExecuteReader();
+                drVerificationNbEtait.Read();
+                string nbEtat = Convert.ToString(drVerificationNbEtait.GetValue(0));
+                drVerificationNbEtait.Close();
+                cmdVerificationNbEtat.Dispose();
 
                 string day = DateTime.Now.ToString("dd");
                 string dateModif = day + "-" + Month + "-" + Year;
@@ -270,32 +265,28 @@ namespace Gsb_Frais
                 if (nbEtat != "0")
                 {
                     //Modification des valeurs existantes
-                    con2.Open();
                     string modifEtat = "UPDATE fichefrais SET idVisiteur = '" + idVisiteur.Trim() + "', mois = '" + Year + Month + "', nbJustificatifs = '0', montantValide = '0.00', dateModif = '" + dateModif + "', idEtat = 'CR' WHERE mois = '" + Year + Month + "' ";
-                    cmd = new SqlCommand(modifEtat, con2);
-                    cmd.ExecuteNonQuery();
-                    SqlDataReader dr2 = cmd.ExecuteReader();
-                    dr2.Read();
-                    con2.Close();
-                    dr2.Close();
+                    SqlCommand cmdModifEtat = new SqlCommand(modifEtat, con);
+                    cmdModifEtat.ExecuteNonQuery();
+                    SqlDataReader drModifEtat = cmdModifEtat.ExecuteReader();
+                    drModifEtat.Read();
+                    cmdModifEtat.Dispose();
+                    drModifEtat.Close();
                 }
                 else
                 {
                     //Insertion des frais forfait
-                    con2.Open();
                     string insertEtat = "INSERT INTO fichefrais (idVisiteur, mois, nbJustificatifs, montantValide, dateModif, idEtat) VALUES('" + idVisiteur.Trim() + "', '" + Year + Month + "', '0', '0.00', '" + dateModif + "', 'CR')";
-                    SqlCommand cmd2 = new SqlCommand(insertEtat, con2);
-                    cmd2.ExecuteNonQuery();
-                    con2.Close();
+                    SqlCommand cmdInsertEtat = new SqlCommand(insertEtat, con);
+                    cmdInsertEtat.ExecuteNonQuery();
+                    cmdInsertEtat.Dispose();
                 }
-                con2.Close();
-                con3.Close();
+                con.Close();
             }
             catch (SystemException ex)
             {
                 MessageBox.Show("Une erreur c'est produite lors de l'enregistrement.", ex.Message);
-                con2.Close();
-                con3.Close();
+                con.Close();
             }
         }
 
@@ -323,7 +314,7 @@ namespace Gsb_Frais
             string Libelle = txt_Libelle.Text;
             string Montant = txt_Montant.Text;
             bool resultParse = false;
-
+            con.Open();
             //Vérification que le champs montant est bien un float sinon message d'erreur
             try
             {
@@ -341,11 +332,10 @@ namespace Gsb_Frais
             {
                 try
                 {
-                    con.Open();
                     string insertFraishorsforfait = "INSERT INTO lignefraishorsforfait (idVisiteur ,mois ,libelle , date , montant ) VALUES('" + idVisiteur.Trim() + "', '" + Year + Month + "', '" + Libelle.Trim() + "', '" + Date.Trim() + "', '" + Montant.Trim() + "')";
-                    cmd = new SqlCommand(insertFraishorsforfait, con);
-                    cmd.ExecuteNonQuery();
-                    con.Close();
+                    SqlCommand cmdInsertFraishorsforfait = new SqlCommand(insertFraishorsforfait, con);
+                    cmdInsertFraishorsforfait.ExecuteNonQuery();
+                    cmdInsertFraishorsforfait.Dispose();
                 }
                 catch
                 {
@@ -359,16 +349,13 @@ namespace Gsb_Frais
                 label_HorsForfait.Visible = true;
             }
 
-            con3.Open();
             string selectFraishorsforfait = "select id, date, libelle, montant from lignefraishorsforfait where idVisiteur= '" + idVisiteur.Trim() + "' AND mois = '" + Year + Month + "'";
-            da = new SqlDataAdapter(selectFraishorsforfait, con3);
+            da = new SqlDataAdapter(selectFraishorsforfait, con);
             DataTable dtSelectFraishorsforfait = new DataTable();
             da.Fill(dtSelectFraishorsforfait);
             dataGridView_HorsForfait.DataSource = dtSelectFraishorsforfait;
-            con3.Close();
-
+            con.Close();
             this.etat_commande(idVisiteur);
-            //da.Update(dt);
         }
 
         private void list_mois(string idVisiteur)
@@ -377,20 +364,53 @@ namespace Gsb_Frais
             {
                 // Remplisage de la DropDownList avec les date de frais remplie
                 con.Open();
-                string listeDate = "select distinct(fichefrais.mois) as date from fichefrais where fichefrais.idVisiteur= '" + idVisiteur.Trim() + "'";
-                cmd = new SqlCommand(listeDate, con);
-                cmd.ExecuteNonQuery();
-                dr = cmd.ExecuteReader();
+                string nbMois = "SELECT COUNT(*) as nbmois FROM fichefrais WHERE fichefrais.idVisiteur= '" + idVisiteur.Trim() + "' AND fichefrais.mois = '" + Year + Month + "' ";
+                SqlCommand cmdNbMois = new SqlCommand(nbMois, con);
+                cmdNbMois.ExecuteNonQuery();
+                SqlDataReader drNbMois = cmdNbMois.ExecuteReader();
+                drNbMois.Read();
+                string NbMoisActuel = Convert.ToString(drNbMois.GetValue(0));
+                cmdNbMois.Dispose();
+                drNbMois.Dispose();
 
-                while (dr.Read())
+                if (NbMoisActuel == "0")
                 {
+                    string listeDate = "select distinct(fichefrais.mois) as date from fichefrais where fichefrais.idVisiteur= '" + idVisiteur.Trim() + "'";
+                    SqlCommand cmdListeDate = new SqlCommand(listeDate, con);
+                    cmdListeDate.ExecuteNonQuery();
+                    SqlDataReader drListeDate = cmdListeDate.ExecuteReader();
 
-                        string date = Convert.ToString(dr.GetValue(0));
+                    while (drListeDate.Read())
+                    {
+
+                        string date = Convert.ToString(drListeDate.GetValue(0));
 
                         list_DateFiche.Items.Add(date);
+                    }
+                    list_DateFiche.Items.Add(Year + Month);
+                    cmdListeDate.Dispose();
+                    drListeDate.Dispose();
                 }
+                else
+                {
+                    string listeDate = "select distinct(fichefrais.mois) as date from fichefrais where fichefrais.idVisiteur= '" + idVisiteur.Trim() + "'";
+                    SqlCommand cmdListeDate = new SqlCommand(listeDate, con);
+                    cmdListeDate.ExecuteNonQuery();
+                    SqlDataReader drListeDate = cmdListeDate.ExecuteReader();
+
+                    while (drListeDate.Read())
+                    {
+
+                        string date = Convert.ToString(drListeDate.GetValue(0));
+
+                        list_DateFiche.Items.Add(date);
+                    }
+                    cmdListeDate.Dispose();
+                    drListeDate.Dispose();
+                }
+                cmdNbMois.Dispose();
+                drNbMois.Dispose();
                 con.Close();
-                list_DateFiche.Items.Add(Year + Month);
             }
             catch
             {
@@ -407,13 +427,11 @@ namespace Gsb_Frais
                 dataGridView_ElementForfait.Dispose();
                 gb_FicheFrais.Visible = true;
             }
-
         }
 
         //Affichage du recapitulatif des frais
         private void bt_Valider_Mois_Click(object sender, EventArgs e)
         {
-
             //Si une date est selectionné affichage de la fiche de frais
             if (list_DateFiche.Text != "")
             {
@@ -429,63 +447,59 @@ namespace Gsb_Frais
             dt = new DataTable();
             da.Fill(dt);
             dataGridView_ElementHorsForfait.DataSource = dt;
-            con.Close();
 
-            con2.Open();
             string verifFrais = "select COUNT(*) as fraisforfait from lignefraisforfait Where lignefraisforfait.idvisiteur ='" + idVisiteur.Trim() + "' and lignefraisforfait.mois='" + list_DateFiche.Text + "'";
-            cmd = new SqlCommand(verifFrais, con2);
-            cmd.ExecuteNonQuery();
-            dr = cmd.ExecuteReader();
-            dr.Read();
-            string nbverifFrais = Convert.ToString(dr.GetValue(0));
-            dr.Close();
-            con2.Close();
+            SqlCommand cmdVerifFrais = new SqlCommand(verifFrais, con);
+            cmdVerifFrais.ExecuteNonQuery();
+            SqlDataReader drVerifFrais = cmdVerifFrais.ExecuteReader();
+            drVerifFrais.Read();
+            string nbverifFrais = Convert.ToString(drVerifFrais.GetValue(0));
+            cmdVerifFrais.Dispose();
+            drVerifFrais.Close();
 
             if (nbverifFrais != "0")
             {
+                dataGridView_ElementForfait.Rows.Clear();
+
                 //Affichage du tableau de frais colonne ETP
-                SqlConnection conETP = new SqlConnection("Server=localhost;database=gsb_frais;trusted_connection= sspi");
-                conETP.Open();
                 string requeteETP = "select top 1 quantite as ETP from lignefraisforfait Where lignefraisforfait.idvisiteur ='" + idVisiteur.Trim() + "' and lignefraisforfait.mois='" + label_Mois.Text + "' and lignefraisforfait.idfraisforfait = 'ETP' ";
-                cmd = new SqlCommand(requeteETP, conETP);
-                cmd.ExecuteNonQuery();
-                dr = cmd.ExecuteReader();
-                dr.Read();
-                string ETP = Convert.ToString(dr.GetValue(0));
-                dr.Close();
+                SqlCommand cmdRequeteETP = new SqlCommand(requeteETP, con);
+                cmdRequeteETP.ExecuteNonQuery();
+                SqlDataReader drRequeteETP = cmdRequeteETP.ExecuteReader();
+                drRequeteETP.Read();
+                string ETP = Convert.ToString(drRequeteETP.GetValue(0));
+                cmdRequeteETP.Dispose();
+                drRequeteETP.Close();
 
                 //Affichage du tableau de frais colonne KM
-                SqlConnection conKM = new SqlConnection("Server=localhost;database=gsb_frais;trusted_connection= sspi");
-                conKM.Open();
                 string requeteKM = "select top 1 quantite as KM from lignefraisforfait Where lignefraisforfait.idvisiteur ='" + idVisiteur.Trim() + "' and lignefraisforfait.mois='" + label_Mois.Text + "' and lignefraisforfait.idfraisforfait = 'KM' ";
-                cmd = new SqlCommand(requeteKM, conKM);
-                cmd.ExecuteNonQuery();
-                dr = cmd.ExecuteReader();
-                dr.Read();
-                string KM = Convert.ToString(dr.GetValue(0));
-                dr.Close();
+                SqlCommand cmdRequeteKM = new SqlCommand(requeteKM, con);
+                cmdRequeteKM.ExecuteNonQuery();
+                SqlDataReader drRequeteKM = cmdRequeteKM.ExecuteReader();
+                drRequeteKM.Read();
+                string KM = Convert.ToString(drRequeteKM.GetValue(0));
+                cmdRequeteKM.Dispose();
+                drRequeteKM.Close();
 
                 //Affichage du tableau de frais colonne NUI
-                SqlConnection conNUI = new SqlConnection("Server=localhost;database=gsb_frais;trusted_connection= sspi");
-                conNUI.Open();
                 string requeteNUI = "select top 1 quantite as NUI from lignefraisforfait Where lignefraisforfait.idvisiteur ='" + idVisiteur.Trim() + "' and lignefraisforfait.mois='" + label_Mois.Text + "' and lignefraisforfait.idfraisforfait = 'NUI' ";
-                cmd = new SqlCommand(requeteNUI, conNUI);
-                cmd.ExecuteNonQuery();
-                dr = cmd.ExecuteReader();
-                dr.Read();
-                string NUI = Convert.ToString(dr.GetValue(0));
-                dr.Close();
+                SqlCommand cmdRequeteNUI = new SqlCommand(requeteNUI, con);
+                cmdRequeteNUI.ExecuteNonQuery();
+                SqlDataReader drRequeteNUI = cmdRequeteNUI.ExecuteReader();
+                drRequeteNUI.Read();
+                string NUI = Convert.ToString(drRequeteNUI.GetValue(0));
+                cmdRequeteNUI.Dispose();
+                drRequeteNUI.Close();
 
                 //Affichage du tableau de frais colonne REP
-                SqlConnection conREP = new SqlConnection("Server=localhost;database=gsb_frais;trusted_connection= sspi");
-                conREP.Open();
                 string requeteREP = "select top 1 quantite as REP from lignefraisforfait Where lignefraisforfait.idvisiteur ='" + idVisiteur.Trim() + "' and lignefraisforfait.mois='" + label_Mois.Text + "' and lignefraisforfait.idfraisforfait = 'REP' ";
-                cmd = new SqlCommand(requeteREP, conREP);
-                cmd.ExecuteNonQuery();
-                dr = cmd.ExecuteReader();
-                dr.Read();
-                string REP = Convert.ToString(dr.GetValue(0));
-                dr.Close();
+                SqlCommand cmdRequeteREP = new SqlCommand(requeteREP, con);
+                cmdRequeteREP.ExecuteNonQuery();
+                SqlDataReader drRequeteREP = cmdRequeteREP.ExecuteReader();
+                drRequeteREP.Read();
+                string REP = Convert.ToString(drRequeteREP.GetValue(0));
+                cmdRequeteREP.Dispose();
+                drRequeteREP.Close();
 
                 //Création du tableau des frais
                 dataGridView_ElementForfait.ColumnCount = 4;
@@ -502,47 +516,47 @@ namespace Gsb_Frais
 
                 //Ajout de la ligne dans le tableau
                 dataGridView_ElementForfait.Rows.Add(row1);
-
-                conETP.Close();
-                conKM.Close();
-                conNUI.Close();
-                conREP.Close();
+            }
+            else
+            {
+                dataGridView_ElementForfait.Rows.Clear();
             }
 
-            con3.Open();
             string FicheFrais = "select COUNT(*) as nbFicheFrais from fichefrais Where fichefrais.idvisiteur ='" + idVisiteur.Trim() + "' AND mois = '" + Year + Month + "'";
-            cmd = new SqlCommand(FicheFrais, con3);
-            cmd.ExecuteNonQuery();
-            dr = cmd.ExecuteReader();
-            dr.Read();
-            string nbFicheFrais = Convert.ToString(dr.GetValue(0));
+            SqlCommand cmdFicheFrais = new SqlCommand(FicheFrais, con);
+            cmdFicheFrais.ExecuteNonQuery();
+            SqlDataReader drFicheFrais = cmdFicheFrais.ExecuteReader();
+            drFicheFrais.Read();
+            string nbFicheFrais = Convert.ToString(drFicheFrais.GetValue(0));
+            cmdFicheFrais.Dispose();
+            drFicheFrais.Close();
 
             if (nbFicheFrais != "0")
             {
                 // Remplissage des champs mais d'abord les enregister en base
-                con3.Open();
-                string fichefrais = "select COUNT(*) as nbFicheFrais, fichefrais.nbJustificatifs, fichefrais.montantValide, fichefrais.dateModif, etat.libelle from fichefrais, etat Where fichefrais.idEtat = etat.id and fichefrais.idvisiteur ='" + idVisiteur.Trim() + "' AND mois = '" + Year + Month + "'";
-                cmd = new SqlCommand(fichefrais, con3);
-                cmd.ExecuteNonQuery();
-                dr = cmd.ExecuteReader();
-                dr.Read();
-
-                string nbJustificatifs = Convert.ToString(dr.GetValue(0));
-                string montantValide = Convert.ToString(dr.GetValue(1));
-                string dateModif = Convert.ToString(dr.GetValue(2));
-                string libelle = Convert.ToString(dr.GetValue(3));
+                string nbfichefrais = "select COUNT(*) as nbFicheFrais, fichefrais.nbJustificatifs, fichefrais.montantValide, fichefrais.dateModif, etat.libelle from fichefrais, etat Where fichefrais.idEtat = etat.id and fichefrais.idvisiteur ='" + idVisiteur.Trim() + "' AND mois = '" + Year + Month + "' GROUP BY nbJustificatifs, montantValide, dateModif, libelle";
+                SqlCommand cmdNbfichefrais = new SqlCommand(nbfichefrais, con);
+                cmdNbfichefrais.ExecuteNonQuery();
+                SqlDataReader drNbfichefrais = cmdNbfichefrais.ExecuteReader();
+                drNbfichefrais.Read();
+ 
+                string nbJustificatifs = Convert.ToString(drNbfichefrais.GetValue(0));
+                string montantValide = Convert.ToString(drNbfichefrais.GetValue(1));
+                string dateModif = Convert.ToString(drNbfichefrais.GetValue(2));
+                string libelle = Convert.ToString(drNbfichefrais.GetValue(3));
 
                 label_libEtat.Text = libelle;
                 label_montantValide.Text = montantValide;
                 label_nbjustificatifs.Text = nbJustificatifs;
                 label_DateModif.Text = dateModif;
 
-                con3.Close();
+                cmdNbfichefrais.Dispose();
+                drNbfichefrais.Close();
             }
-
+            con.Close();
         }
 
-        //Affichage d'une popUp quand clique sur une ligne du tableau des frais hors forfait
+        //Suppression de la ligne hors forfait clique
         private void dataGridView_HorsForfait_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
             // Multi selection de bloque
@@ -560,30 +574,27 @@ namespace Gsb_Frais
 
                         con.Open();
                         string suppLigne = "DELETE from lignefraishorsforfait Where lignefraishorsforfait.id ='" + idlignefraishorsforfait + "'";
-                        cmd = new SqlCommand(suppLigne, con);
-                        cmd.ExecuteNonQuery();
-                        dr = cmd.ExecuteReader();
-                        dr.Close();
-                        con.Close();
+                        SqlCommand cmdSuppLigne = new SqlCommand(suppLigne, con);
+                        cmdSuppLigne.ExecuteNonQuery();
+                        SqlDataReader drSuppLigne = cmdSuppLigne.ExecuteReader();
+                        cmdSuppLigne.Dispose();
+                        drSuppLigne.Close();
 
                         // Reremplissage du tableau de frais hors forfait apres la suppression
-                        con3.Open();
                         string selectFraishorsforfait = "select id, date, libelle, montant from lignefraishorsforfait where idVisiteur= '" + idVisiteur.Trim() + "' AND mois = '" + Year + Month + "'";
-                        da = new SqlDataAdapter(selectFraishorsforfait, con3);
+                        da = new SqlDataAdapter(selectFraishorsforfait, con);
                         DataTable dtSelectFraishorsforfait = new DataTable();
                         da.Fill(dtSelectFraishorsforfait);
                         dataGridView_HorsForfait.DataSource = null;
                         dataGridView_HorsForfait.DataSource = dtSelectFraishorsforfait;
-                        con3.Close();
                     }
+                    con.Close();
                 }
             }
             catch
             {
                 MessageBox.Show("Une erreur c'est produite lors de la suppression.");
-                dr.Close();
                 con.Close();
-                con3.Close();
             }
         }
     }
