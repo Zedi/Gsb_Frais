@@ -37,6 +37,7 @@ namespace Gsb_Frais
             tabControl1.TabPages.Remove(tabPage2);
             tabControl1.TabPages.Remove(tabPage3);
             tabControl1.TabPages.Remove(tabPage4);
+            tabControl1.TabPages.Remove(tabPage5);
 
             Year = DateTime.Now.ToString("yyyy");
             Month = DateTime.Now.ToString("MM");
@@ -82,6 +83,10 @@ namespace Gsb_Frais
                         tabControl1.TabPages.Add(tabPage3);
                         tabControl1.TabPages.Add(tabPage4);
                     }
+                    if (idVisiteur.Trim() == "a11")
+                    {
+                        tabControl1.TabPages.Add(tabPage5);
+                    }
                 }
                 else
                 {
@@ -120,6 +125,7 @@ namespace Gsb_Frais
             tabControl1.TabPages.Remove(tabPage2);
             tabControl1.TabPages.Remove(tabPage3);
             tabControl1.TabPages.Remove(tabPage4);
+            tabControl1.TabPages.Remove(tabPage5);
         }
 
         //Bouton Annulation Déconnexion
@@ -596,6 +602,19 @@ namespace Gsb_Frais
                 MessageBox.Show("Une erreur c'est produite lors de la suppression.");
                 con.Close();
             }
+        }
+
+        private void bt_gestionFrais_Click(object sender, EventArgs e)
+        {
+            con.Open();
+            string FicheFraisMaj = "DELETE FROM fichefrais Where idEtat = 'CL' ";
+            SqlCommand cmdFicheFraisMaj = new SqlCommand(FicheFraisMaj, con);
+            cmdFicheFraisMaj.ExecuteNonQuery();
+            SqlDataReader drFicheFraisMaj = cmdFicheFraisMaj.ExecuteReader();
+            //drFicheFrais.Read();
+            //string nbFicheFrais = Convert.ToString(drFicheFrais.GetValue(0));
+            cmdFicheFraisMaj.Dispose();
+            drFicheFraisMaj.Close();
         }
     }
 }
