@@ -24,9 +24,6 @@ namespace Gsb_Frais
         string Year;
         string Month;
 
-
-
-
         public Accueil()
         {
             InitializeComponent();
@@ -145,13 +142,13 @@ namespace Gsb_Frais
             string Quantite = "";
             bool resultParse = false;
 
-            //Verification que les change rentré sont des floats (chiffres)
+            //Verification que les change rentré sont des decimals (chiffres)
             try
             {
-                float.Parse(InsertEtape);
-                float.Parse(InsertKm);
-                float.Parse(InsertNuit);
-                float.Parse(InsertRepas);
+                decimal.Parse(InsertEtape);
+                decimal.Parse(InsertKm);
+                decimal.Parse(InsertNuit);
+                decimal.Parse(InsertRepas);
                 resultParse = true;
 
             }
@@ -321,10 +318,10 @@ namespace Gsb_Frais
             string Montant = txt_Montant.Text;
             bool resultParse = false;
             con.Open();
-            //Vérification que le champs montant est bien un float sinon message d'erreur
+            //Vérification que le champs montant est bien un decimal sinon message d'erreur
             try
             {
-                float.Parse(Montant);
+                decimal.Parse(Montant);
                 resultParse = true;
 
             }
@@ -333,7 +330,7 @@ namespace Gsb_Frais
                 MessageBox.Show("Merci d'enregistrer des valeurs valide.");
             }
 
-            //Si float insertion des donnée en base
+            //Si decimal insertion des donnée en base
             if (resultParse == true)
             {
                 try
@@ -604,17 +601,79 @@ namespace Gsb_Frais
             }
         }
 
+        //Mise a jour de l'etat des frais
         private void bt_gestionFrais_Click(object sender, EventArgs e)
         {
-            con.Open();
-            string FicheFraisMaj = "DELETE FROM fichefrais Where idEtat = 'CL' ";
-            SqlCommand cmdFicheFraisMaj = new SqlCommand(FicheFraisMaj, con);
-            cmdFicheFraisMaj.ExecuteNonQuery();
-            SqlDataReader drFicheFraisMaj = cmdFicheFraisMaj.ExecuteReader();
-            //drFicheFrais.Read();
-            //string nbFicheFrais = Convert.ToString(drFicheFrais.GetValue(0));
-            cmdFicheFraisMaj.Dispose();
-            drFicheFraisMaj.Close();
+            try
+            {
+                con.Open();
+                string selectFrais = "select mois, idEtat from fichefrais";
+                SqlCommand cmdselectFrais = new SqlCommand(selectFrais, con);
+                cmdselectFrais.ExecuteNonQuery();
+                SqlDataReader drselectFrais = cmdselectFrais.ExecuteReader();
+                while (drselectFrais.Read())
+                {
+                    string moisFrais = Convert.ToString(drselectFrais.GetValue(0));
+                    string idEtatFrais = Convert.ToString(drselectFrais.GetValue(1));
+
+                    string date = DateTime.Now.ToString("yyyyMM");
+                    DateTime newDate = DateTime.ParseExact(moisFrais, "yyyyMM", System.Globalization.CultureInfo.InvariantCulture);
+                    string dateMoisFrais1 = newDate.AddMonths(1).ToString("yyyyMM");
+                    string dateMoisFrais3 = newDate.AddMonths(3).ToString("yyyyMM");
+                    string dateMoisFrais6 = newDate.AddMonths(6).ToString("yyyyMM");
+
+                    con1.Open();
+                    // Frais date mois +1
+                    if (date == dateMoisFrais1)
+                    {
+                        string FicheFraisUpdateVA = "UPDATE fichefrais SET idEtat = 'VA' Where idEtat = 'CR' and mois = '" + moisFrais + "' ";
+                        SqlCommand cmdFicheFraisUpdateVA = new SqlCommand(FicheFraisUpdateVA, con1);
+                        cmdFicheFraisUpdateVA.ExecuteNonQuery();
+                        SqlDataReader drFicheFraisUpdateVA = cmdFicheFraisUpdateVA.ExecuteReader();
+                        cmdFicheFraisUpdateVA.Dispose();
+                        drFicheFraisUpdateVA.Close();
+                    }
+                    // Frais date mois +3
+                    if (date == dateMoisFrais3)
+                    {
+                        string FicheFraisUpdateRB = "UPDATE fichefrais SET idEtat = 'RB' Where idEtat = 'VA'  and mois = '" + moisFrais + "' ";
+                        SqlCommand cmdFicheFraisUpdateRB = new SqlCommand(FicheFraisUpdateRB, con1);
+                        cmdFicheFraisUpdateRB.ExecuteNonQuery();
+                        SqlDataReader drFicheFraisUpdateRB = cmdFicheFraisUpdateRB.ExecuteReader();
+                        cmdFicheFraisUpdateRB.Dispose();
+                        drFicheFraisUpdateRB.Close();
+                    }
+                    // Frais date mois +6
+                    if (date == dateMoisFrais6)
+                    {
+                        string FicheFraisMaj = "DELETE FROM fichefrais Where idEtat = 'CL'  and mois = '" + moisFrais + "' ";
+                        SqlCommand cmdFicheFraisMaj = new SqlCommand(FicheFraisMaj, con1);
+                        cmdFicheFraisMaj.ExecuteNonQuery();
+                        SqlDataReader drFicheFraisMaj = cmdFicheFraisMaj.ExecuteReader();
+                        cmdFicheFraisMaj.Dispose();
+                        drFicheFraisMaj.Close();
+                    }
+                    con1.Close();
+                }
+                cmdselectFrais.Dispose();
+                drselectFrais.Close();
+
+                //Tableau recap de l'etat des frais
+                string selecctFicheFraisEtat = "select mois, nbJustificatifs, montantValide, dateModif, idEtat from fichefrais";
+                da = new SqlDataAdapter(selecctFicheFraisEtat, con);
+                dt = new DataTable();
+                da.Fill(dt);
+                dataGridView_FicheFraisEtat.DataSource = dt;
+                dataGridView_FicheFraisEtat.DataSource = null;
+                dataGridView_FicheFraisEtat.DataSource = dt;
+                con.Close();
+            }
+            catch
+            {
+                MessageBox.Show("La mise à jour des frais n'a pas été possible.");
+                con1.Close();
+                con.Close();
+            }
         }
     }
 }
